@@ -1,7 +1,6 @@
 import About from "@/components/About";
 import AuthRedirect from "@/components/Common/AuthRedirect";
 import ScrollUp from "@/components/Common/ScrollUp";
-import Faq from "@/components/Faq";
 import Features from "@/components/Features";
 import Hero from "@/components/Hero";
 import { Metadata } from "next";
@@ -19,7 +18,6 @@ export default function Home() {
       <Hero />
       <Features />
       <About />
-      <Faq />
     </main>
   );
 }

@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import SocialSignIn from "../SocialSignIn";
+// import SocialSignIn from "../SocialSignIn";
 import SwitchOption from "../SwitchOption";
 import { useState } from "react";
 import MagicLink from "../MagicLink";
@@ -11,7 +11,7 @@ import Loader from "@/components/Common/Loader";
 
 const SignUp = () => {
   const router = useRouter();
-  const [isPassword, setIsPassword] = useState(false);
+  const [isPassword, setIsPassword] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e: any) => {
@@ -69,14 +69,14 @@ const SignUp = () => {
                 </Link>
               </div>
 
-              <SocialSignIn />
+              {/* <SocialSignIn /> */}
 
-              <span className="z-1 relative my-8 block text-center">
+              {/* <span className="z-1 relative my-8 block text-center">
                 <span className="-z-1 absolute left-0 top-1/2 block h-px w-full bg-stroke dark:bg-dark-3"></span>
                 <span className="text-body-secondary relative z-10 inline-block bg-white px-3 text-base dark:bg-dark-2">
                   OR
                 </span>
-              </span>
+              </span> */}
 
               <SwitchOption
                 isPassword={isPassword}
@@ -116,7 +116,7 @@ const SignUp = () => {
                     <select
                       name="role"
                       required
-                      className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-dark outline-none transition focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:text-white dark:focus:border-primary"
+                      className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-dark outline-none transition focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-3 dark:text-white dark:focus:border-primary"
                       defaultValue=""
                     >
                       <option value="" disabled className="text-dark-6">
@@ -142,18 +142,7 @@ const SignUp = () => {
               ) : (
                 <MagicLink />
               )}
-
-              <p className="text-body-secondary mb-4 text-base">
-                By creating an account you are agree with our{" "}
-                <Link href="/#" className="text-primary hover:underline">
-                  Privacy
-                </Link>{" "}
-                and{" "}
-                <Link href="/#" className="text-primary hover:underline">
-                  Policy
-                </Link>
-              </p>
-
+              
               <p className="text-body-secondary text-base">
                 Already have an account?
                 <Link
