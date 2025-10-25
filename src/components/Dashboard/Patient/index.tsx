@@ -552,13 +552,13 @@ const PatientDashboard = () => {
                                 href={`/api/download/${report.id}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="rounded-md bg-primary px-3 py-1 text-xs font-medium text-white transition hover:bg-primary/90"
+                                className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-white transition hover:bg-primary/90"
                               >
                                 View
                               </a>
                               <a
                                 href={`/api/download/${report.id}?download=true`}
-                                className="rounded-md bg-primary px-3 py-1 text-xs font-medium text-white transition hover:bg-primary/90"
+                                className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-white transition hover:bg-primary/90"
                               >
                                 Download
                               </a>
