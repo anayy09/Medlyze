@@ -7,9 +7,9 @@ const Features = () => {
     <section className="pb-8 pt-20 dark:bg-dark lg:pb-[70px] lg:pt-[120px]">
       <div className="container">
         <SectionTitle
-          subtitle="Features"
-          title="Main Features Of Medlyze"
-          paragraph="Discover the key features that make Medlyze your trusted AI-powered diagnostic support platform."
+          subtitle=""
+          title="Features"
+          paragraph=""
         />
 
         <div className="-mx-4 mt-12 flex flex-wrap lg:mt-20">
