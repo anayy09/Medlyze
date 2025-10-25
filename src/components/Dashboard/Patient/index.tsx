@@ -532,7 +532,7 @@ const PatientDashboard = () => {
                         key={report.id}
                         className="rounded-lg border border-gray-200 bg-white p-6 dark:border-dark-3 dark:bg-dark"
                       >
-                        <div className="mb-4 flex items-start justify-between">
+                          <div className="mb-4 flex items-start justify-between">
                           <div>
                             <h3 className="text-xl font-bold text-dark dark:text-white">
                               {report.title}
@@ -546,14 +546,28 @@ const PatientDashboard = () => {
                               </p>
                             )}
                           </div>
-                          <div className="flex gap-2">
-                            <span className={`rounded-full px-3 py-1 text-xs font-medium ${getRiskBadgeColor(report.aiAnalysis?.riskLevel || "")}`}>
+                          <div className="flex flex-col gap-2">
+                            <div className="flex gap-2">
+                              <a
+                                href={`/api/download/${report.id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="rounded-md bg-primary px-3 py-1 text-xs font-medium text-white transition hover:bg-primary/90"
+                              >
+                                View
+                              </a>
+                              <a
+                                href={`/api/download/${report.id}?download=true`}
+                                className="rounded-md bg-primary px-3 py-1 text-xs font-medium text-white transition hover:bg-primary/90"
+                              >
+                                Download
+                              </a>
+                            </div>
+                            <span className={`rounded-full px-3 py-1 text-center text-xs font-medium ${getRiskBadgeColor(report.aiAnalysis?.riskLevel || "")}`}>
                               {report.status}
                             </span>
                           </div>
-                        </div>
-
-                        {report.aiAnalysis && (
+                        </div>                        {report.aiAnalysis && (
                           <div className="mt-4 space-y-4 border-t border-gray-200 pt-4 dark:border-dark-3">
                             <div>
                               <h4 className="mb-2 font-semibold text-dark dark:text-white">

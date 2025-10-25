@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
         userId: user.id,
         title,
         description: description || '',
-        reportType,
+        reportType: reportType as any,
         fileUrl: fileId,
         fileName: file.name,
         fileSize: file.size,
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
           title: medicalReport.title,
           reportType: medicalReport.reportType,
           status: medicalReport.status,
-          createdAt: medicalReport.createdAt,
+          uploadedAt: medicalReport.uploadedAt,
         },
       },
       { status: 201 }

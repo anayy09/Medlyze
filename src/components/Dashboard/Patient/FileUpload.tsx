@@ -194,11 +194,11 @@ const FileUpload = ({ onClose, onSuccess }: FileUploadProps) => {
             <select
               value={reportType}
               onChange={(e) => setReportType(e.target.value)}
-              className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-dark outline-none transition focus:border-primary dark:border-dark-3 dark:text-white"
+              className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-dark outline-none transition focus:border-primary dark:border-dark-3 dark:text-white dark:bg-dark-2"
               disabled={uploading}
+              
               required
             >
-              <option value="">Select report type</option>
               {reportTypes.map((type) => (
                 <option key={type.value} value={type.value}>
                   {type.label}

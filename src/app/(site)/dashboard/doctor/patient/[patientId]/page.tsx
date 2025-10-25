@@ -382,20 +382,38 @@ const PatientDetailPage = () => {
                           </p>
                         )}
                       </div>
-                      <div className="flex gap-2">
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-medium ${getRiskBadgeColor(
-                            report.aiAnalysis?.riskLevel || ""
-                          )}`}
-                        >
-                          {report.status}
-                        </span>
-                        <button
-                          onClick={() => handleAddNote(report)}
-                          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary/90"
-                        >
-                          Add/Edit Note
-                        </button>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex gap-2">
+                          <a
+                            href={`/api/download/${report.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-md bg-primary px-3 py-1 text-xs font-medium text-white transition hover:bg-primary/90"
+                          >
+                            View
+                          </a>
+                          <a
+                            href={`/api/download/${report.id}?download=true`}
+                            className="rounded-md bg-primary px-3 py-1 text-xs font-medium text-white transition hover:bg-primary/90"
+                          >
+                            Download
+                          </a>
+                        </div>
+                        <div className="flex gap-2">
+                          <span
+                            className={`rounded-full px-3 py-1 text-center text-xs font-medium ${getRiskBadgeColor(
+                              report.aiAnalysis?.riskLevel || ""
+                            )}`}
+                          >
+                            {report.status}
+                          </span>
+                          <button
+                            onClick={() => handleAddNote(report)}
+                            className="rounded-md bg-primary px-3 py-1 text-xs font-medium text-white transition hover:bg-primary/90"
+                          >
+                            Add/Edit Note
+                          </button>
+                        </div>
                       </div>
                     </div>
 

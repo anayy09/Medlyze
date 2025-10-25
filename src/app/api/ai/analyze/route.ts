@@ -243,7 +243,7 @@ export async function GET(request: NextRequest) {
             title: true,
             reportType: true,
             status: true,
-            createdAt: true,
+            uploadedAt: true,
           },
         },
       },
