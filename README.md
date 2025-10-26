@@ -6,11 +6,31 @@
 
 ### For Patients
 - **Upload Medical Reports**: Support for X-rays, CT scans, MRIs, ECGs, blood tests, and pathology reports (PDF, PNG, JPEG up to 10MB)
-- **Advanced AI Analysis**: 
+- **Advanced AI Analysis**:
   - Specialized LLM models (GPT-5) with medical domain expertise
   - Vision-capable analysis for interpreting medical images, waveforms, and scans
   - Patient-friendly explanations alongside technical medical summaries
   - Context-aware analysis using your complete medical history
+  - Automatic biomarker extraction for longitudinal tracking
+- **Longitudinal Health Tracking**: 🆕
+  - Automatic tracking of biomarkers from medical reports (cholesterol, blood pressure, glucose, etc.)
+  - Trend analysis showing improvement, worsening, or stable patterns
+  - Visual charts displaying health metrics over time
+  - Alerts for values outside healthy ranges
+- **Risk Assessment**: 🆕
+  - Framingham 10-year cardiovascular disease risk score
+  - Type 2 diabetes risk stratification
+  - Overall health score (0-100) based on comprehensive data
+  - Personalized risk reduction recommendations
+- **Health Goals**: 🆕
+  - Set and track personalized health goals (lower BP, reduce weight, improve cholesterol)
+  - Progress tracking with percentage completion
+  - Celebratory milestones when goals are achieved
+  - Educational resources tailored to your goals
+- **Educational Resources**: 🆕
+  - Curated articles and videos from trusted medical sources (AHA, CDC, Mayo Clinic, Harvard Health)
+  - Condition-specific educational content based on your reports
+  - Interactive tools and infographics for better health understanding
 - **Privacy-by-Design**: Automatic de-identification and PII masking before AI analysis
 - **Doctor Collaboration**: Grant and revoke access to doctors for seamless consultation
 - **Secure Storage**: AES-256 encryption for all medical files at rest and in transit
@@ -19,9 +39,15 @@
 ### For Doctors
 - **Patient Management**: View all patients who have granted you access
 - **Report Review**: Access patient reports with AI analysis insights
+- **Longitudinal View**: 🆕
+  - Track patient biomarkers and health metrics over time
+  - View trend analysis and identify concerning patterns
+  - Access comprehensive risk assessments (Framingham, diabetes risk)
+  - Monitor patient progress toward health goals
 - **Add Professional Notes**: Provide diagnosis, notes, and follow-up recommendations
-- **Comprehensive Patient View**: See complete patient demographics and medical history
+- **Comprehensive Patient View**: See complete patient demographics, medical history, and risk profile
 - **Real-time Updates**: Instant access when patients share new reports
+- **Goal Setting**: 🆕 Collaborate with patients to set and monitor health goals
 
 ### Core Technology Stack ⚡
 
@@ -29,7 +55,6 @@
 - **PostgreSQL with Prisma**: Robust relational database with type-safe ORM
 - **NextAuth**: Secure authentication with role-based access control (Patient/Doctor)
 - **LLM Integration**: 
-  - University of Florida's AI API with GPT-5 model
   - Specialized medical analysis prompts for each report type (ECG, X-Ray, CT, MRI, Blood Tests, Pathology)
   - Vision-capable multimodal analysis for interpreting medical images
   - PDFRest API for PDF-to-image conversion to enable visual analysis
@@ -55,7 +80,7 @@
 
 - Node.js 18+ installed
 - PostgreSQL database
-- LLM API access (University of Florida AI API or compatible endpoint)
+- LLM API access
 - PDFRest API key (for PDF-to-image conversion)
 - Stripe account (for payments)
 
@@ -103,10 +128,22 @@ ENCRYPTION_KEY="your-32-character-encryption-key"
 4. Set up the database:
 
 ```bash
+# Generate Prisma client
 npx prisma generate
+
+# Push schema to database
 npx prisma db push
+
+# Seed database with demo users and data
 npx prisma db seed
 ```
+
+This will create 5 demo users:
+- **3 Patients**: Michael Rodriguez (high cholesterol), Priya Patel (prediabetic), James Chen (healthy)
+- **2 Doctors**: Dr. Sarah Martinez (Cardiologist), Dr. James Williams (Endocrinologist)
+- All demo accounts use password: `demo123`
+
+The seed includes complete health tracking data: biomarker trends, health goals, risk assessments, and medical reports with AI analysis.
 
 5. Run the development server:
 
@@ -128,12 +165,17 @@ medlyze/
 │   │   │   ├── (auth)/        # Authentication pages
 │   │   │   └── dashboard/     # Patient & Doctor dashboards
 │   │   └── api/               # API routes
+│   │       ├── ai/            # AI analysis endpoints
+│   │       └── health/        # 🆕 Health tracking, risk assessment, goals
 │   ├── components/            # React components
 │   ├── lib/
 │   │   ├── llmAnalysis.ts     # LLM integration with specialized medical prompts
 │   │   ├── deidentification.ts # PII masking and privacy utilities
 │   │   ├── pdfToImage.ts      # PDF-to-image conversion via PDFRest
-│   │   └── fileStorage.ts     # AES-256 file encryption/decryption
+│   │   ├── fileStorage.ts     # AES-256 file encryption/decryption
+│   │   ├── riskAssessment.ts  # 🆕 Framingham & diabetes risk calculators
+│   │   ├── trendAnalysis.ts   # 🆕 Longitudinal biomarker tracking
+│   │   └── educationalContent.ts # 🆕 Curated health education resources
 │   ├── utils/                 # Utility functions
 │   └── types/                 # TypeScript types
 └── public/
@@ -154,6 +196,17 @@ medlyze/
   - Vision-capable analysis for ECG waveforms, X-rays, scans
   - Context-aware using patient medical history
   - Specialized prompts for: ECG, X-Ray, CT Scan, MRI, Blood Tests, Pathology
+  - Biomarker extraction and longitudinal tracking 🆕
+  - Educational content recommendations 🆕
+
+### Health Tracking 🆕
+- `GET /api/health/trends` - Get longitudinal biomarker trends
+- `POST /api/health/trends` - Manually add biomarker data point
+- `GET /api/health/risk-assessment` - Get latest risk assessments
+- `POST /api/health/risk-assessment` - Calculate comprehensive risk profile (Framingham, diabetes)
+- `GET /api/health/goals` - Get all patient health goals
+- `POST /api/health/goals` - Create new health goal
+- `PATCH /api/health/goals` - Update goal status or record progress
 
 ### Patient APIs
 - `GET /api/patient/profile` - Get patient profile
@@ -175,7 +228,7 @@ medlyze/
 ## Key Features in Detail
 
 ### AI-Powered Medical Analysis
-- **Specialized Medical Models**: Uses GPT-5 via University of Florida's AI infrastructure with domain-specific prompts for each medical report type
+- **Specialized Medical Models**: Uses GPT-5 with domain-specific prompts for each medical report type
 - **Vision Capabilities**: Multimodal analysis interprets visual medical data:
   - ECG waveforms and intervals
   - X-ray and CT scan abnormalities
@@ -202,7 +255,55 @@ medlyze/
 3. **Conversion**: PDFRest API converts pages to high-quality images
 4. **Extraction**: Both visual content and any embedded text
 5. **Analysis**: Multimodal LLM processes images + context
-6. **Response**: Structured JSON with findings, risk levels, and recommendations
+6. **Biomarker Extraction**: 🆕 Automatic identification and storage of key health metrics
+7. **Response**: Structured JSON with findings, risk levels, recommendations, and educational resources
+
+### Longitudinal Health Management 🆕
+
+The platform now includes sophisticated health tracking capabilities:
+
+#### Biomarker Tracking
+- **Automatic Extraction**: Biomarkers are automatically identified from medical reports
+  - Blood tests: Cholesterol (total, HDL, LDL), triglycerides, glucose, HbA1c, creatinine
+  - ECG: Heart rate, QTc interval
+  - Blood pressure measurements
+- **Trend Analysis**: Machine learning algorithms detect patterns over time
+  - Linear regression to identify improving/worsening/stable trends
+  - Percentage change calculations between measurements
+  - Alerts for values outside healthy ranges
+- **Visualization**: Historical data plotted on interactive charts
+
+#### Risk Stratification
+- **Framingham Risk Score**: Evidence-based 10-year cardiovascular disease risk
+  - Considers age, sex, cholesterol levels, blood pressure, smoking, diabetes
+  - Returns percentage risk and risk category (LOW to VERY_HIGH)
+  - Personalized recommendations for risk reduction
+- **Diabetes Risk Assessment**: Type 2 diabetes probability
+  - Based on ADA/CDC guidelines
+  - Factors: Age, BMI, waist circumference, family history, glucose levels
+  - Prediabetes detection and prevention strategies
+- **Health Score (0-100)**: Comprehensive health metric combining:
+  - Cardiovascular risk factors
+  - Diabetes risk indicators
+  - Lifestyle factors (smoking status)
+  - Recent biomarker trends
+
+#### Goal Setting & Tracking
+- **SMART Goals**: Specific, measurable health objectives
+  - Examples: "Reduce LDL cholesterol to 100 mg/dL by June 2025"
+  - "Lower blood pressure from 140/90 to 120/80 in 3 months"
+- **Progress Monitoring**: Regular updates and percentage completion
+- **Achievement System**: Celebratory notifications and milestone tracking
+- **Educational Support**: Goal-specific resources and guidance
+
+#### Educational Content Library
+Over 50 curated resources from trusted medical organizations:
+- **American Heart Association**: CVD, hypertension, cholesterol
+- **CDC**: Diabetes prevention, smoking cessation
+- **Mayo Clinic**: General health and condition-specific guidance
+- **Harvard Health**: Evidence-based nutrition and lifestyle
+- **Content Types**: Articles, videos, interactive tools, infographics
+- **Trust Scoring**: Resources rated 1-10 based on source credibility
 
 ## Acknowledgments
 
