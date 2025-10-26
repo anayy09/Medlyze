@@ -5,9 +5,9 @@
 
 import { deidentifyText, preparePatientContext } from './deidentification';
 
-const LLM_API_URL = process.env.LLM_API_URL || 'https://chat.ai.it.ufl.edu/api/chat/completions';
+const LLM_API_URL = process.env.LLM_API_URL;
 const LLM_API_KEY = process.env.LLM_API_KEY || '';
-const LLM_MODEL = process.env.LLM_MODEL || 'gpt-4o';
+const LLM_MODEL = process.env.LLM_MODEL || 'gpt-5';
 
 // System prompts for different report types
 const SYSTEM_PROMPTS = {
@@ -211,6 +211,10 @@ Report Content:
 ${deidentifiedContent}
 
 Remember to provide your response in the JSON format specified in the system prompt.`;
+    }
+
+    if (!LLM_API_URL) {
+      throw new Error('LLM_API_URL environment variable is not configured');
     }
 
     // Call LLM API
