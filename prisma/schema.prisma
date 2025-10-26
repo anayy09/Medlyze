@@ -75,6 +75,13 @@ model PatientProfile {
   chronicIllness  String?  @db.Text
   surgeries       String?  @db.Text
   familyHistory   String?  @db.Text
+  // Risk assessment data
+  smokingStatus   String?  // NEVER, FORMER, CURRENT
+  diabetesStatus  Boolean? @default(false)
+  // Health tracking
+  healthScore     Float?   @default(0.0) // 0-100 scale
+  riskScores      Json?    // Store calculated risk scores: {framingham: 12.5, diabetes: 8.3}
+  healthGoals     HealthGoal[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -134,6 +141,9 @@ model AIAnalysis {
   recommendations String?       @db.Text
   modelUsed       String
   analyzedAt      DateTime      @default(now())
+  // Extracted biomarkers for longitudinal tracking
+  biomarkers      Json?         // Structured data: {cholesterol: 180, bp_systolic: 120, etc.}
+  educationalLinks String?      @db.Text // JSON array of curated educational resources
 }
 
 model DoctorNote {
@@ -184,4 +194,69 @@ enum AccessStatus {
   APPROVED
   DENIED
   REVOKED
+}
+
+// New models for longitudinal analysis and health tracking
+
+model HealthGoal {
+  id              String         @id @default(cuid())
+  patientProfileId String
+  patientProfile  PatientProfile @relation(fields: [patientProfileId], references: [id], onDelete: Cascade)
+  title           String
+  description     String?        @db.Text
+  targetMetric    String         // e.g., "blood_pressure", "weight", "cholesterol"
+  currentValue    Float?
+  targetValue     Float
+  unit            String         // e.g., "mmHg", "kg", "mg/dL"
+  targetDate      DateTime
+  status          GoalStatus     @default(IN_PROGRESS)
+  createdBy       String?        // User ID (patient or doctor)
+  progress        GoalProgress[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model GoalProgress {
+  id              String     @id @default(cuid())
+  goalId          String
+  goal            HealthGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  value           Float
+  notes           String?    @db.Text
+  recordedAt      DateTime   @default(now())
+}
+
+model BiomarkerTrend {
+  id              String   @id @default(cuid())
+  userId          String
+  biomarkerType   String   // e.g., "cholesterol_total", "bp_systolic", "glucose_fasting"
+  value           Float
+  unit            String
+  reportId        String?  // Optional link to the report where this was extracted
+  recordedDate    DateTime
+  trend           String?  // IMPROVING, WORSENING, STABLE (calculated)
+  createdAt       DateTime @default(now())
+  
+  @@index([userId, biomarkerType, recordedDate])
+}
+
+model RiskAssessment {
+  id              String   @id @default(cuid())
+  userId          String
+  assessmentType  String   // e.g., "FRAMINGHAM_CVD", "DIABETES_RISK", "ASCVD"
+  score           Float
+  riskCategory    String   // LOW, MODERATE, HIGH, VERY_HIGH
+  riskPercentage  Float?   // Actual percentage risk (e.g., 22.5 for 22.5% 10-year risk)
+  factors         Json     // Contributing factors and their values
+  recommendations String   @db.Text
+  validUntil      DateTime // Risk scores should be recalculated periodically
+  calculatedAt    DateTime @default(now())
+  
+  @@index([userId, assessmentType])
+}
+
+enum GoalStatus {
+  IN_PROGRESS
+  ACHIEVED
+  ABANDONED
+  OVERDUE
 }
