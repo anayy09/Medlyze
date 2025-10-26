@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import Breadcrumb from "@/components/Common/Breadcrumb";
+import PatientHealthTracking from "@/components/Dashboard/Doctor/PatientHealthTracking";
 
 interface PatientProfile {
   age?: number;
@@ -70,6 +71,7 @@ const PatientDetailPage = () => {
     followUp: "",
   });
   const [savingNote, setSavingNote] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
     if (patientId) {
@@ -348,7 +350,32 @@ const PatientDetailPage = () => {
             )}
           </div>
 
+          {/* Tabs Navigation */}
+          <div className="mb-6 flex gap-4 border-b border-gray-200 dark:border-dark-3">
+            <button
+              onClick={() => setActiveTab("overview")}
+              className={`pb-3 text-base font-medium transition ${
+                activeTab === "overview"
+                  ? "border-b-2 border-primary text-primary"
+                  : "text-body-color hover:text-primary dark:text-dark-6"
+              }`}
+            >
+              Overview & Reports
+            </button>
+            <button
+              onClick={() => setActiveTab("health")}
+              className={`pb-3 text-base font-medium transition ${
+                activeTab === "health"
+                  ? "border-b-2 border-primary text-primary"
+                  : "text-body-color hover:text-primary dark:text-dark-6"
+              }`}
+            >
+              Health Tracking 🆕
+            </button>
+          </div>
+
           {/* Medical Reports */}
+          {activeTab === "overview" && (
           <div className="rounded-lg bg-white p-6 shadow-md dark:bg-dark">
             <h2 className="mb-6 text-2xl font-bold text-dark dark:text-white">
               Medical Reports
@@ -510,6 +537,14 @@ const PatientDetailPage = () => {
               </div>
             )}
           </div>
+          )}
+
+          {/* Health Tracking Tab */}
+          {activeTab === "health" && (
+            <div className="rounded-lg bg-white p-6 shadow-md dark:bg-dark">
+              <PatientHealthTracking patientId={patientId} />
+            </div>
+          )}
         </div>
       </section>
 

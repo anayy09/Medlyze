@@ -14,8 +14,8 @@ const Signin = () => {
   const router = useRouter();
 
   const [loginData, setLoginData] = useState({
-    email: "patient@medlyze.com",
-    password: "patient123",
+    email: "",
+    password: "",
     checkboxToggle: false,
   });
 

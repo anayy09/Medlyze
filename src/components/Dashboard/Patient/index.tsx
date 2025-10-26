@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import FileUpload from "./FileUpload";
+import HealthTracking from "./HealthTracking";
 
 interface PatientProfile {
   id: string;
@@ -317,6 +318,16 @@ const PatientDashboard = () => {
               Overview
             </button>
             <button
+              onClick={() => setActiveTab("health")}
+              className={`pb-4 text-base font-medium transition ${
+                activeTab === "health"
+                  ? "border-b-2 border-primary text-primary"
+                  : "text-body-color hover:text-primary dark:text-dark-6"
+              }`}
+            >
+              Health Tracking 🆕
+            </button>
+            <button
               onClick={() => setActiveTab("reports")}
               className={`pb-4 text-base font-medium transition ${
                 activeTab === "reports"
@@ -491,6 +502,8 @@ const PatientDashboard = () => {
                 </div>
               </div>
             )}
+
+            {activeTab === "health" && <HealthTracking />}
 
             {activeTab === "reports" && (
               <div>
