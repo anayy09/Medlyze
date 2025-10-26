@@ -5,6 +5,8 @@ import { prisma } from '@/utils/prismaDB';
 import { analyzeMedicalReport } from '@/lib/llmAnalysis';
 import { readEncryptedFile } from '@/lib/fileStorage';
 import { convertPDFToImages } from '@/lib/pdfToImage';
+import { extractBiomarkers } from '@/lib/trendAnalysis';
+import { getEducationalRecommendations } from '@/lib/educationalContent';
 
 /**
  * Extract text and images from medical report file
@@ -174,12 +176,47 @@ export async function POST(request: NextRequest) {
       reportData.images
     );
 
-    // Create AI analysis record
+    // Extract biomarkers for longitudinal tracking
+    const biomarkers = extractBiomarkers(analysisData.findings, report.reportType);
+    const biomarkerData: any = {};
+    
+    // Save biomarkers to database for trend analysis
+    if (biomarkers.length > 0) {
+      console.log(`📊 Extracted ${biomarkers.length} biomarker(s) for tracking`);
+      
+      for (const biomarker of biomarkers) {
+        biomarkerData[biomarker.type] = biomarker.value;
+        
+        await prisma.biomarkerTrend.create({
+          data: {
+            userId: report.userId,
+            biomarkerType: biomarker.type,
+            value: biomarker.value,
+            unit: biomarker.unit,
+            reportId: report.id,
+            recordedDate: new Date(),
+          },
+        });
+      }
+    }
+
+    // Get educational content recommendations
+    const educationalLinks = getEducationalRecommendations(
+      analysisData.findings,
+      report.reportType,
+      analysisData.riskLevel
+    );
+
+    console.log(`📚 Generated ${educationalLinks.length} educational recommendation(s)`);
+
+    // Create AI analysis record with enhanced data
     const aiAnalysis = await prisma.aIAnalysis.create({
       data: {
         reportId,
         analysisType: `${report.reportType}_ANALYSIS`,
         ...analysisData,
+        biomarkers: biomarkerData, // Store extracted biomarkers
+        educationalLinks: JSON.stringify(educationalLinks), // Store educational resources
       },
     });
 
@@ -195,6 +232,8 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         analysis: aiAnalysis,
+        biomarkers,
+        educationalResources: educationalLinks,
       },
       { status: 201 }
     );
